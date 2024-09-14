@@ -4,14 +4,14 @@
 aria2c_path="/home/container/aria2/aria2c"
 config_path="/home/container/aria2/aria2.conf"
 log_path="/home/container/aria2/aria2.log"
-rpc_secret="P3TERX"  # 替换为你实际的 RPC 密钥
+ARIA2_RPC_PORT=${SERVER_PORT:-6800}        # Aria2 RPC端口，自动获取玩具端口，不用改  
+rpc_secret="P3TERX"                        # Aria2 RPC 密钥
 
 # 哪吒监控变量
 export NEZHA_SERVER=${NEZHA_SERVER:-'nz.abc.cn'}       # 哪吒客户端域名或ip,哪吒3个变量不全不运行
 export NEZHA_PORT=${NEZHA_PORT:-'5555'}                # 哪吒端口为{443,8443,2053,2083,2087,2096}其中之一时自动开启tls
 export NEZHA_KEY=${NEZHA_KEY:-''}                      # 哪吒客户端密钥
 
-ARIA2_RPC_PORT=${SERVER_PORT:-6800}
 
 # 统一输出格式的函数
 log_info() {
