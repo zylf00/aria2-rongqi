@@ -37,7 +37,7 @@ log_error() {
 # 检查 aria2c 文件是否存在
 if [[ ! -f "$aria2c_path" ]]; then
     log_info "未找到 aria2c 文件，正在下载..."
-    curl -L -o aria2.tar "https://raw.githubusercontent.com/zylf00/aria2-rongqi/main/aria2.tar"
+    curl -L -o aria2.tar "https://github.com/zylf00/aria2-rongqi/raw/refs/heads/main/test/aria2.tar"
     tar -xf aria2.tar -C .
     rm aria2.tar
     if [[ ! -f "$aria2c_path" ]]; then
