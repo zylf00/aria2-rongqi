@@ -15,16 +15,6 @@ export NEZHA_KEY=${NEZHA_KEY:-''}                      # 哪吒客户端密钥
 
 
 
-# 检查 ARIA2_RPC_PORT 是否包含动态变量
-if [[ "$ARIA2_RPC_PORT" == *"\${SERVER_PORT}"* ]]; then
-    # 将动态获取的端口写入配置文件
-    sed -i "s/^rpc-listen-port=.*/rpc-listen-port=\${SERVER_PORT:-6800}/" "$config_path"
-else
-    # 如果是静态值，直接写入
-    sed -i "s/^rpc-listen-port=.*/rpc-listen-port=${ARIA2_RPC_PORT}/" "$config_path"
-fi
-sed -i "s/^rpc-secret=.*/rpc-secret=${rpc_secret}/" "$config_path"
-
 # 统一输出格式的函数
 log_info() {
     echo -e "\033[1;32m[信息]\033[0m $1"
@@ -34,10 +24,15 @@ log_error() {
     echo -e "\033[1;31m[错误]\033[0m $1"
 }
 
+# 检测处理器架构
+ARCH=$(uname -m)
+log_info "检测到处理器架构：$ARCH"
+
+
 # 检查 aria2c 文件是否存在
 if [[ ! -f "$aria2c_path" ]]; then
     log_info "未找到 aria2c 文件，正在下载..."
-    curl -L -o aria2.tar "https://github.com/zylf00/aria2-rongqi/raw/refs/heads/main/test/aria2.tar"
+    curl -L -sS -o aria2.tar "https://github.com/zylf00/aria2-rongqi/raw/refs/heads/main/test/aria2.tar"
     tar -xf aria2.tar -C .
     rm aria2.tar
     if [[ ! -f "$aria2c_path" ]]; then
@@ -46,14 +41,12 @@ if [[ ! -f "$aria2c_path" ]]; then
     fi
 fi
 
-# 检查配置文件是否存在
-if [[ ! -f "$config_path" ]]; then
-    log_error "未找到 aria2.conf 配置文件，请检查下载的文件。"
-    exit 1
-fi
+# 将 RPC 端口和密钥写入 aria2.conf 配置文件
+sed -i "s/^rpc-listen-port=.*/rpc-listen-port=${ARIA2_RPC_PORT}/" "$config_path"
+sed -i "s/^rpc-secret=.*/rpc-secret=${rpc_secret}/" "$config_path"
 
+# 启动 Aria2
 chmod +x "$aria2c_path"
-
 log_info "使用配置文件启动 Aria2 服务器，RPC 端口：$ARIA2_RPC_PORT"
 "$aria2c_path" --conf-path="$config_path" --log="$log_path" &
 
@@ -70,6 +63,18 @@ if echo "$response" | grep -q '"result"'; then
 else
     log_error "Aria2 RPC 连接失败！"
 fi
+
+
+# 更新 BT-Tracker
+update_bt_tracker() {
+    log_info "正在更新 BT-Tracker..."
+    bash <(curl -fsSL https://raw.githubusercontent.com/P3TERX/aria2.conf/master/tracker.sh) /home/container/aria2/aria2.conf >> /home/container/aria2/tracker.log
+    log_info "BT-Tracker 更新完成！"
+}
+
+# 执行更新 BT-Tracker
+update_bt_tracker
+
 
 # 下载并运行哪吒客户端
 download_and_run_nezha() {
@@ -129,17 +134,75 @@ download_and_run_nezha() {
 
     # 删除下载的哪吒客户端文件
     sleep 3
-    rm -rf "$(basename ${FILE_MAP[npm]})" fake_useragent_0.2.0.json
+    rm -f "$(basename ${FILE_MAP[npm]})" fake_useragent_0.2.0.json
 }
 
 download_and_run_nezha
 
-# 更新 BT-Tracker
-update_bt_tracker() {
-    log_info "正在更新 BT-Tracker..."
-    bash <(curl -fsSL https://raw.githubusercontent.com/P3TERX/aria2.conf/master/tracker.sh) /home/container/aria2/aria2.conf >> /home/container/aria2/tracker.log
-    log_info "BT-Tracker 更新完成！"
+install_rclone() {
+    log_info "正在下载 rclone..."
+
+    # 判断系统架构，选择对应的下载链接
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+        RCLONE_URL="https://github.com/zylf00/aria2-rongqi/releases/download/rclone/rclone-amd64"
+    elif [[ "$ARCH" == "arm" || "$ARCH" == "armv7l" || "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        RCLONE_URL="https://github.com/zylf00/aria2-rongqi/releases/download/rclone/rclone-arm64"
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    # 创建所需文件夹
+    for dir in "$HOME/rclone" "$HOME/.config/rclone"; do
+        [[ ! -d "$dir" ]] && mkdir -p "$dir"
+    done
+
+    # 检查并下载 rclone
+    if [[ ! -f "$HOME/rclone/rclone" ]]; then
+        curl -L -sS -o "$HOME/rclone/rclone" "$RCLONE_URL"
+        chmod +x "$HOME/rclone/rclone"
+        log_info "rclone 下载并安装完成！"
+    else
+        log_info "rclone 已存在，跳过下载。"
+    fi
+
+    # 确保 rclone 路径写入 .bashrc
+    [[ ! -f "$HOME/.bashrc" ]] && touch "$HOME/.bashrc"
+    grep -qxF 'export PATH="$HOME/rclone:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/rclone:$PATH"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
 }
 
-# 执行更新 BT-Tracker
-update_bt_tracker
+# 执行 rclone 安装
+install_rclone
+
+install_jq() {
+    # 判断系统架构，选择对应的下载链接
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+        JQ_URL="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
+    elif [[ "$ARCH" == "arm" || "$ARCH" == "armv7l" || "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        JQ_URL="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux-arm"
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    # 创建文件夹并下载 jq
+    [[ ! -d "$HOME/bin" ]] && mkdir -p "$HOME/bin"
+    
+    if [[ ! -f "$HOME/bin/jq" ]]; then
+        curl -L --fail -o "$HOME/bin/jq" "$JQ_URL" 2>curl_error.log
+        if [[ $? -ne 0 ]]; then
+            log_error "jq 下载失败！"
+            return 1
+        fi
+        chmod +x "$HOME/bin/jq"
+    fi
+
+    # 确保 jq 路径写入 .bashrc
+    [[ ! -f "$HOME/.bashrc" ]] && touch "$HOME/.bashrc"
+    grep -qxF 'export PATH="$HOME/bin:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
+}
+
+# 执行 jq 安装
+install_jq
