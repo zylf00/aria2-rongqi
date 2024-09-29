@@ -17,8 +17,6 @@
 **注意：**玩具平台本身无法直接配置 Rclone，你需要在其他平台上完成 Rclone 的网盘挂载并上传 `rclone.conf` 文件。
 
 将配置文件上传到这个文件夹：
-
-```bash
 /home/container/.config/rclone
 
 
