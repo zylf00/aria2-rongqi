@@ -20,14 +20,12 @@
 
 - **步骤 2: 修改 Aria2 配置文件
   - 在 /home/container/aria2c/aria2.conf 中找到如下配置项：
-  - on-download-complete=/root/.aria2c/clean.sh
+  - on-download-complete=/home/container/aria2/clean.sh
+   - 将 clean.sh 替换为 upload.sh 以启用自动上传功能
 
-   - 将 clean.sh 替换为 upload.sh 以启用自动上传功能：
-   - on-download-complete=/root/.aria2c/upload.sh
 
 - **步骤 3: 修改脚本配置文件
    - 在 /home/container/aria2c/script.conf 中根据需要修改相关配置，文件中有中文注释指导配置修改。首次使用建议只修改网盘名称：
-
    - 网盘名称(RCLONE 配置时填写的 name)
    - drive-name=OneDrive
 
