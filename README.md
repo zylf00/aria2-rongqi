@@ -30,11 +30,11 @@ on-download-complete=/root/.aria2c/upload.sh
 步骤 3: 修改脚本配置文件
 在 /home/container/aria2c/script.conf 中根据需要修改相关配置，文件中有中文注释指导配置修改。首次使用建议只修改网盘名称：
 
-# 网盘名称(RCLONE 配置时填写的 name)
+网盘名称(RCLONE 配置时填写的 name)
 drive-name=OneDrive
 
 
-项目引用
+## 项目引用
 - **Aria2** 使用的是 P3TERX 大佬的 [Aria2-Pro-Core](https://github.com/P3TERX/Aria2-Pro-Core) 和完美配置。
   - 项目地址: [P3TERX/aria2.conf](https://github.com/P3TERX/aria2.conf)
   
@@ -43,7 +43,7 @@ drive-name=OneDrive
 
 
 
-免责声明
+## 免责声明
 
 本程序仅供学习和了解，禁止用于任何商业用途，下载后请于 24 小时内删除所有相关文件。所有文字、数据及图片均为其所属版权所有者所有，若进行转载，请注明来源。
 
