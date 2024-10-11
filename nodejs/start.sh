@@ -1,12 +1,8 @@
 #!/bin/bash
 
-# Aria2 路径和配置
-aria2c_path="/home/container/aria2/aria2c"
-config_path="/home/container/aria2/aria2.conf"
-log_path="/home/container/aria2/aria2.log"
-
 ARIA2_RPC_PORT=${SERVER_PORT:-6800}       # Aria2 RPC端口，自动获取玩具端口，不用改 
 rpc_secret="P3TERX"                       # Aria2 RPC 密钥
+
 
 # 哪吒监控变量
 export NEZHA_SERVER=${NEZHA_SERVER:-'nz.abc.cn'}       # 哪吒客户端域名或ip,哪吒3个变量不全不运行
@@ -30,25 +26,25 @@ log_info "检测到处理器架构：$ARCH"
 
 
 # 检查 aria2c 文件是否存在
-if [[ ! -f "$aria2c_path" ]]; then
+if [[ ! -f "./aria2/aria2c" ]]; then
     log_info "未找到 aria2c 文件，正在下载..."
     curl -L -sS -o aria2.tar "https://github.com/zylf00/aria2-rongqi/raw/refs/heads/main/test/aria2.tar"
     tar -xf aria2.tar -C .
     rm aria2.tar
-    if [[ ! -f "$aria2c_path" ]]; then
+    if [[ ! -f "./aria2/aria2c" ]]; then
         log_error "下载后未能找到 aria2c 文件，退出。"
         exit 1
     fi
 fi
 
 # 将 RPC 端口和密钥写入 aria2.conf 配置文件
-sed -i "s/^rpc-listen-port=.*/rpc-listen-port=${ARIA2_RPC_PORT}/" "$config_path"
-sed -i "s/^rpc-secret=.*/rpc-secret=${rpc_secret}/" "$config_path"
+sed -i "s/^rpc-listen-port=.*/rpc-listen-port=${ARIA2_RPC_PORT}/" "./aria2/aria2.conf"
+sed -i "s/^rpc-secret=.*/rpc-secret=${rpc_secret}/" "./aria2/aria2.conf"
 
 # 启动 Aria2
 chmod +x "$aria2c_path"
 log_info "使用配置文件启动 Aria2 服务器，RPC 端口：$ARIA2_RPC_PORT"
-"$aria2c_path" --conf-path="$config_path" --log="$log_path" &
+"./aria2/aria2c" --conf-path="./aria2/aria2.conf" --log="./aria2/aria2.log" &
 
 sleep 2
 
@@ -159,7 +155,7 @@ install_rclone() {
 
     # 检查并下载 rclone
     if [[ ! -f "$HOME/rclone/rclone" ]]; then
-        curl -L -sS -o "$HOME/rclone/rclone" "$RCLONE_URL"
+        curl -L -sS -o "$HOME/rclone/rclone" "$RCLONE_URL" 2>/dev/null
         chmod +x "$HOME/rclone/rclone"
         log_info "rclone 下载并安装完成！"
     else
@@ -190,7 +186,7 @@ install_jq() {
     [[ ! -d "$HOME/bin" ]] && mkdir -p "$HOME/bin"
     
     if [[ ! -f "$HOME/bin/jq" ]]; then
-        curl -L --fail -o "$HOME/bin/jq" "$JQ_URL" 2>curl_error.log
+        curl -L --fail -o "$HOME/bin/jq" "$JQ_URL"
         if [[ $? -ne 0 ]]; then
             log_error "jq 下载失败！"
             return 1
