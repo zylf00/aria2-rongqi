@@ -1,7 +1,6 @@
 const http = require('http');
 const fs = require('fs');
 const exec = require("child_process").exec;
-const subtxt = './sub.txt' 
 const PORT = process.env.PORT || 3000; 
 
 // Run start.sh
@@ -20,7 +19,7 @@ fs.chmod("start.sh", 0o777, (err) => {
   });
   child.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      console.clear()
+      console.clear();
       console.log(`App is running`);
   });
 });
@@ -30,19 +29,9 @@ const server = http.createServer((req, res) => {
     if (req.url === '/') {
       res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end('Hello world!');
-    }
-    // get-sub
-    if (req.url === '/sub') {
-      fs.readFile(subtxt, 'utf8', (err, data) => {
-        if (err) {
-          console.error(err);
-          res.writeHead(500, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Error reading sub.txt' }));
-        } else {
-          res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-          res.end(data);
-        }
-      });
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Not found');
     }
   });
 
