@@ -5,7 +5,7 @@ import http.server
 import socketserver
 import threading
 
-PORT = int(os.environ.get('PORT') or 3000) # http port
+PORT = int(os.environ.get('PORT') or 3000)  # http port
 
 class MyHandler(http.server.SimpleHTTPRequestHandler):
 
@@ -17,22 +17,11 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b'Hello, world')
-        elif self.path == '/sub':
-            try:
-                with open("./sub.txt", 'rb') as file:
-                    content = file.read()
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/plain; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(content)
-            except FileNotFoundError:
-                self.send_response(500)
-                self.end_headers()
-                self.wfile.write(b'Error reading file')
         else:
             self.send_response(404)
             self.end_headers()
             self.wfile.write(b'Not found')
+
 httpd = socketserver.TCPServer(('', PORT), MyHandler)
 server_thread = threading.Thread(target=httpd.serve_forever)
 server_thread.daemon = True
