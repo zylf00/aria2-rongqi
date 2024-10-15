@@ -1,9 +1,400 @@
 #!/bin/bash
-export ARIA2_RPC_PORT=${SERVER_PORT:-6800}       # Aria2 RPC端口，自动获取玩具端口，不用改 
-export rpc_secret="P3TERX"                       # Aria2 RPC 密钥
+ARIA2_RPC_PORT=${SERVER_PORT:-6800}       # Aria2 RPC端口，自动获取玩具端口，不用改 
+rpc_secret="P3TERX"                       # Aria2 RPC 密钥
+
 # 哪吒监控变量
 export NEZHA_SERVER=${NEZHA_SERVER:-'nz.abc.cn'}       # 哪吒客户端域名或ip,哪吒3个变量不全不运行
 export NEZHA_PORT=${NEZHA_PORT:-'5555'}                # 哪吒端口为{443,8443,2053,2083,2087,2096}其中之一时自动开启tls
 export NEZHA_KEY=${NEZHA_KEY:-''}                      # 哪吒客户端密钥
 
-echo "IyDnu5/kuIDovpPlh7rmoLzlvI/nmoTlh73mlbAKbG9nX2luZm8oKSB7CiAgICBlY2hvIC1lICJcMDMzWzE7MzJtW+S/oeaBr11cMDMzWzBtICQxIgp9Cgpsb2dfZXJyb3IoKSB7CiAgICBlY2hvIC1lICJcMDMzWzE7MzFtW+mUmeivr11cMDMzWzBtICQxIgp9CgojIOajgOa1i+WkhOeQhuWZqOaetuaehApBUkNIPSQodW5hbWUgLW0pCmxvZ19pbmZvICLmo4DmtYvliLDlpITnkIblmajmnrbmnoTvvJokQVJDSCIKCgojIOajgOafpSBhcmlhMmMg5paH5Lu25piv5ZCm5a2Y5ZyoCmlmIFtbICEgLWYgIi4vYXJpYTIvYXJpYTJjIiBdXTsgdGhlbgogICAgbG9nX2luZm8gIuacquaJvuWIsCBhcmlhMmMg5paH5Lu277yM5q2j5Zyo5LiL6L29Li4uIgogICAgY3VybCAtTCAtc1MgLW8gYXJpYTIudGFyICJodHRwczovL2dpdGh1Yi5jb20venlsZjAwL2FyaWEyLXJvbmdxaS9yYXcvcmVmcy9oZWFkcy9tYWluL3Rlc3QvYXJpYTIudGFyIgogICAgdGFyIC14ZiBhcmlhMi50YXIgLUMgLgogICAgcm0gYXJpYTIudGFyCiAgICBpZiBbWyAhIC1mICIuL2FyaWEyL2FyaWEyYyIgXV07IHRoZW4KICAgICAgICBsb2dfZXJyb3IgIuS4i+i9veWQjuacquiDveaJvuWIsCBhcmlhMmMg5paH5Lu277yM6YCA5Ye644CCIgogICAgICAgIGV4aXQgMQogICAgZmkKZmkKCiMg5bCGIFJQQyDnq6/lj6Plkozlr4bpkqXlhpnlhaUgYXJpYTIuY29uZiDphY3nva7mlofku7YKc2VkIC1pICJzL15ycGMtbGlzdGVuLXBvcnQ9LiovcnBjLWxpc3Rlbi1wb3J0PSR7QVJJQTJfUlBDX1BPUlR9LyIgIi4vYXJpYTIvYXJpYTIuY29uZiIKc2VkIC1pICJzL15ycGMtc2VjcmV0PS4qL3JwYy1zZWNyZXQ9JHtycGNfc2VjcmV0fS8iICIuL2FyaWEyL2FyaWEyLmNvbmYiCgojIOWQr+WKqCBBcmlhMgpjaG1vZCAreCAiJGFyaWEyY19wYXRoIgpsb2dfaW5mbyAi5L2/55So6YWN572u5paH5Lu25ZCv5YqoIEFyaWEyIOacjeWKoeWZqO+8jFJQQyDnq6/lj6PvvJokQVJJQTJfUlBDX1BPUlQiCiIuL2FyaWEyL2FyaWEyYyIgLS1jb25mLXBhdGg9Ii4vYXJpYTIvYXJpYTIuY29uZiIgLS1sb2c9Ii4vYXJpYTIvYXJpYTIubG9nIiAmCgpzbGVlcCAyCgojIOa1i+ivlSBBcmlhMiBSUEMg6L+e5o6lCmxvZ19pbmZvICLmraPlnKjmtYvor5UgQXJpYTIgUlBDIOi/nuaOpSIKcmVzcG9uc2U9JChjdXJsIC1zIC1YIFBPU1QgaHR0cDovLzEyNy4wLjAuMToiJEFSSUEyX1JQQ19QT1JUIi9qc29ucnBjIFwKICAgIC1kICd7Impzb25ycGMiOiIyLjAiLCJtZXRob2QiOiJhcmlhMi5nZXRHbG9iYWxTdGF0IiwiaWQiOiJjdXJsdGVzdCIsInBhcmFtcyI6WyJ0b2tlbjonIiRycGNfc2VjcmV0IiciXX0nIFwKICAgIC1IICdDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL2pzb24nKQoKaWYgZWNobyAiJHJlc3BvbnNlIiB8IGdyZXAgLXEgJyJyZXN1bHQiJzsgdGhlbgogICAgbG9nX2luZm8gIkFyaWEyIFJQQyDov57mjqXmraPluLjvvIEiCmVsc2UKICAgIGxvZ19lcnJvciAiQXJpYTIgUlBDIOi/nuaOpeWksei0pe+8gSIKZmkKCgojIOabtOaWsCBCVC1UcmFja2VyCnVwZGF0ZV9idF90cmFja2VyKCkgewogICAgbG9nX2luZm8gIuato+WcqOabtOaWsCBCVC1UcmFja2VyLi4uIgogICAgYmFzaCA8KGN1cmwgLWZzU0wgaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL1AzVEVSWC9hcmlhMi5jb25mL21hc3Rlci90cmFja2VyLnNoKSAvaG9tZS9jb250YWluZXIvYXJpYTIvYXJpYTIuY29uZiA+PiAvaG9tZS9jb250YWluZXIvYXJpYTIvdHJhY2tlci5sb2cKICAgIGxvZ19pbmZvICJCVC1UcmFja2VyIOabtOaWsOWujOaIkO+8gSIKfQoKIyDmiafooYzmm7TmlrAgQlQtVHJhY2tlcgp1cGRhdGVfYnRfdHJhY2tlcgoKCiMg5LiL6L295bm26L+Q6KGM5ZOq5ZCS5a6i5oi356uvCmRvd25sb2FkX2FuZF9ydW5fbmV6aGEoKSB7CiAgICBBUkNIPSQodW5hbWUgLW0pICYmIERPV05MT0FEX0RJUj0iLiIgJiYgbWtkaXIgLXAgIiRET1dOTE9BRF9ESVIiICYmIEZJTEVfSU5GTz0oKQoKICAgIGlmIFsgIiRBUkNIIiA9PSAiYXJtIiBdIHx8IFsgIiRBUkNIIiA9PSAiYXJtNjQiIF0gfHwgWyAiJEFSQ0giID09ICJhYXJjaDY0IiBdOyB0aGVuCiAgICAgICAgRklMRV9JTkZPPSgiaHR0cHM6Ly9naXRodWIuY29tL3p5bGYwMC9hcmlhMi1yb25ncWkvcmF3L21haW4vdGVzdC9hcm0vc3dpdGggbnBtIikKICAgIGVsaWYgWyAiJEFSQ0giID09ICJhbWQ2NCIgXSB8fCBbICIkQVJDSCIgPT0gIng4Nl82NCIgXSB8fCBbICIkQVJDSCIgPT0gIng4NiIgXTsgdGhlbgogICAgICAgIEZJTEVfSU5GTz0oImh0dHBzOi8vZ2l0aHViLmNvbS96eWxmMDAvYXJpYTItcm9uZ3FpL3Jhdy9tYWluL3Rlc3QvYW1kL3N3aXRoIG5wbSIpCiAgICBlbHNlCiAgICAgICAgbG9nX2Vycm9yICLkuI3mlK/mjIHnmoTmnrbmnoTvvJokQVJDSCIKICAgICAgICBleGl0IDEKICAgIGZpCgogICAgZGVjbGFyZSAtQSBGSUxFX01BUAogICAgZ2VuZXJhdGVfcmFuZG9tX25hbWUoKSB7CiAgICAgICAgbG9jYWwgY2hhcnM9YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwCiAgICAgICAgbG9jYWwgbmFtZT0iIgogICAgICAgIGZvciBpIGluIHsxLi42fTsgZG8KICAgICAgICAgICAgbmFtZT0iJG5hbWUke2NoYXJzOlJBTkRPTSUkeyNjaGFyc306MX0iCiAgICAgICAgZG9uZQogICAgICAgIGVjaG8gIiRuYW1lIgogICAgfQoKICAgIGRvd25sb2FkX2ZpbGUoKSB7CiAgICAgICAgbG9jYWwgVVJMPSQxCiAgICAgICAgbG9jYWwgTkVXX0ZJTEVOQU1FPSQyCiAgICAgICAgY3VybCAtTCAtc1MgLW8gIiRORVdfRklMRU5BTUUiICIkVVJMIgogICAgICAgIGxvZ19pbmZvICLkuIvovb3lk6rlkJLlrqLmiLfnq68gJE5FV19GSUxFTkFNRSIKICAgIH0KCiAgICBmb3IgZW50cnkgaW4gIiR7RklMRV9JTkZPW0BdfSI7IGRvCiAgICAgICAgVVJMPSQoZWNobyAiJGVudHJ5IiB8IGN1dCAtZCAnICcgLWYgMSkKICAgICAgICBSQU5ET01fTkFNRT0kKGdlbmVyYXRlX3JhbmRvbV9uYW1lKQogICAgICAgIE5FV19GSUxFTkFNRT0iJERPV05MT0FEX0RJUi8kUkFORE9NX05BTUUiCiAgICAgICAgZG93bmxvYWRfZmlsZSAiJFVSTCIgIiRORVdfRklMRU5BTUUiCiAgICAgICAgY2htb2QgK3ggIiRORVdfRklMRU5BTUUiCiAgICAgICAgRklMRV9NQVBbJChlY2hvICIkZW50cnkiIHwgY3V0IC1kICcgJyAtZiAyKV09IiRORVdfRklMRU5BTUUiCiAgICBkb25lCgogICAgaWYgWyAtZSAiJChiYXNlbmFtZSAke0ZJTEVfTUFQW25wbV19KSIgXTsgdGhlbgogICAgICAgIHRsc1BvcnRzPSgiNDQzIiAiODQ0MyIgIjIwOTYiICIyMDg3IiAiMjA4MyIgIjIwNTMiKQogICAgICAgIGlmIFtbICIke3Rsc1BvcnRzWypdfSIgPX4gIiR7TkVaSEFfUE9SVH0iIF1dOyB0aGVuCiAgICAgICAgICAgIE5FWkhBX1RMUz0iLS10bHMiCiAgICAgICAgZWxzZQogICAgICAgICAgICBORVpIQV9UTFM9IiIKICAgICAgICBmaQogICAgICAgIGlmIFsgLW4gIiRORVpIQV9TRVJWRVIiIF0gJiYgWyAtbiAiJE5FWkhBX1BPUlQiIF0gJiYgWyAtbiAiJE5FWkhBX0tFWSIgXTsgdGhlbgogICAgICAgICAgICBleHBvcnQgVE1QRElSPSQocHdkKQogICAgICAgICAgICBub2h1cCAuLyIkKGJhc2VuYW1lICR7RklMRV9NQVBbbnBtXX0pIiAtcyAke05FWkhBX1NFUlZFUn06JHtORVpIQV9QT1JUfSAtcCAke05FWkhBX0tFWX0gJHtORVpIQV9UTFN9ID4vZGV2L251bGwgMj4mMSAmCiAgICAgICAgICAgIHNsZWVwIDEKICAgICAgICAgICAgbG9nX2luZm8gIiQoYmFzZW5hbWUgJHtGSUxFX01BUFtucG1dfSkg5q2j5Zyo6L+Q6KGMIgogICAgICAgIGVsc2UKICAgICAgICAgICAgbG9nX2Vycm9yICLlk6rlkJLlj5jph4/kuLrnqbrvvIzot7Pov4fov5DooYwiCiAgICAgICAgZmkKICAgIGZpCgogICAgIyDliKDpmaTkuIvovb3nmoTlk6rlkJLlrqLmiLfnq6/mlofku7YKICAgIHNsZWVwIDMKICAgIHJtIC1mICIkKGJhc2VuYW1lICR7RklMRV9NQVBbbnBtXX0pIiBmYWtlX3VzZXJhZ2VudF8wLjIuMC5qc29uCn0KCmRvd25sb2FkX2FuZF9ydW5fbmV6aGEKCmluc3RhbGxfcmNsb25lKCkgewogICAgbG9nX2luZm8gIuato+WcqOS4i+i9vSByY2xvbmUuLi4iCgogICAgIyDliKTmlq3ns7vnu5/mnrbmnoTvvIzpgInmi6nlr7nlupTnmoTkuIvovb3pk77mjqUKICAgIGlmIFtbICIkQVJDSCIgPT0gIng4Nl82NCIgfHwgIiRBUkNIIiA9PSAiYW1kNjQiIF1dOyB0aGVuCiAgICAgICAgUkNMT05FX1VSTD0iaHR0cHM6Ly9naXRodWIuY29tL3p5bGYwMC9hcmlhMi1yb25ncWkvcmVsZWFzZXMvZG93bmxvYWQvcmNsb25lL3JjbG9uZS1hbWQ2NCIKICAgIGVsaWYgW1sgIiRBUkNIIiA9PSAiYXJtIiB8fCAiJEFSQ0giID09ICJhcm12N2wiIHx8ICIkQVJDSCIgPT0gImFybTY0IiB8fCAiJEFSQ0giID09ICJhYXJjaDY0IiBdXTsgdGhlbgogICAgICAgIFJDTE9ORV9VUkw9Imh0dHBzOi8vZ2l0aHViLmNvbS96eWxmMDAvYXJpYTItcm9uZ3FpL3JlbGVhc2VzL2Rvd25sb2FkL3JjbG9uZS9yY2xvbmUtYXJtNjQiCiAgICBlbHNlCiAgICAgICAgbG9nX2Vycm9yICLkuI3mlK/mjIHnmoTmnrbmnoTvvJokQVJDSCIKICAgICAgICBleGl0IDEKICAgIGZpCgogICAgIyDliJvlu7rmiYDpnIDmlofku7blpLkKICAgIGZvciBkaXIgaW4gIiRIT01FL3JjbG9uZSIgIiRIT01FLy5jb25maWcvcmNsb25lIjsgZG8KICAgICAgICBbWyAhIC1kICIkZGlyIiBdXSAmJiBta2RpciAtcCAiJGRpciIKICAgIGRvbmUKCiAgICAjIOajgOafpeW5tuS4i+i9vSByY2xvbmUKICAgIGlmIFtbICEgLWYgIiRIT01FL3JjbG9uZS9yY2xvbmUiIF1dOyB0aGVuCiAgICAgICAgY3VybCAtTCAtc1MgLW8gIiRIT01FL3JjbG9uZS9yY2xvbmUiICIkUkNMT05FX1VSTCIgMj4vZGV2L251bGwKICAgICAgICBjaG1vZCAreCAiJEhPTUUvcmNsb25lL3JjbG9uZSIKICAgICAgICBsb2dfaW5mbyAicmNsb25lIOS4i+i9veW5tuWuieijheWujOaIkO+8gSIKICAgIGVsc2UKICAgICAgICBsb2dfaW5mbyAicmNsb25lIOW3suWtmOWcqO+8jOi3s+i/h+S4i+i9veOAgiIKICAgIGZpCgogICAgIyDnoa7kv50gcmNsb25lIOi3r+W+hOWGmeWFpSAuYmFzaHJjCiAgICBbWyAhIC1mICIkSE9NRS8uYmFzaHJjIiBdXSAmJiB0b3VjaCAiJEhPTUUvLmJhc2hyYyIKICAgIGdyZXAgLXF4RiAnZXhwb3J0IFBBVEg9IiRIT01FL3JjbG9uZTokUEFUSCInICIkSE9NRS8uYmFzaHJjIiB8fCBlY2hvICdleHBvcnQgUEFUSD0iJEhPTUUvcmNsb25lOiRQQVRIIicgPj4gIiRIT01FLy5iYXNocmMiCiAgICBzb3VyY2UgIiRIT01FLy5iYXNocmMiCn0KCiMg5omn6KGMIHJjbG9uZSDlronoo4UKaW5zdGFsbF9yY2xvbmUKCmluc3RhbGxfanEoKSB7CiAgICAjIOWIpOaWreezu+e7n+aetuaehO+8jOmAieaLqeWvueW6lOeahOS4i+i9vemTvuaOpQogICAgaWYgW1sgIiRBUkNIIiA9PSAieDg2XzY0IiB8fCAiJEFSQ0giID09ICJhbWQ2NCIgXV07IHRoZW4KICAgICAgICBKUV9VUkw9Imh0dHBzOi8vZ2l0aHViLmNvbS9zdGVkb2xhbi9qcS9yZWxlYXNlcy9kb3dubG9hZC9qcS0xLjYvanEtbGludXg2NCIKICAgIGVsaWYgW1sgIiRBUkNIIiA9PSAiYXJtIiB8fCAiJEFSQ0giID09ICJhcm12N2wiIHx8ICIkQVJDSCIgPT0gImFybTY0IiB8fCAiJEFSQ0giID09ICJhYXJjaDY0IiBdXTsgdGhlbgogICAgICAgIEpRX1VSTD0iaHR0cHM6Ly9naXRodWIuY29tL3N0ZWRvbGFuL2pxL3JlbGVhc2VzL2Rvd25sb2FkL2pxLTEuNi9qcS1saW51eC1hcm0iCiAgICBlbHNlCiAgICAgICAgbG9nX2Vycm9yICLkuI3mlK/mjIHnmoTmnrbmnoTvvJokQVJDSCIKICAgICAgICBleGl0IDEKICAgIGZpCgogICAgIyDliJvlu7rmlofku7blpLnlubbkuIvovb0ganEKICAgIFtbICEgLWQgIiRIT01FL2JpbiIgXV0gJiYgbWtkaXIgLXAgIiRIT01FL2JpbiIKICAgIAogICAgaWYgW1sgISAtZiAiJEhPTUUvYmluL2pxIiBdXTsgdGhlbgogICAgICAgIGN1cmwgLUwgLS1mYWlsIC1vICIkSE9NRS9iaW4vanEiICIkSlFfVVJMIgogICAgICAgIGlmIFtbICQ/IC1uZSAwIF1dOyB0aGVuCiAgICAgICAgICAgIGxvZ19lcnJvciAianEg5LiL6L295aSx6LSl77yBIgogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIGZpCiAgICAgICAgY2htb2QgK3ggIiRIT01FL2Jpbi9qcSIKICAgIGZpCgogICAgIyDnoa7kv50ganEg6Lev5b6E5YaZ5YWlIC5iYXNocmMKICAgIFtbICEgLWYgIiRIT01FLy5iYXNocmMiIF1dICYmIHRvdWNoICIkSE9NRS8uYmFzaHJjIgogICAgZ3JlcCAtcXhGICdleHBvcnQgUEFUSD0iJEhPTUUvYmluOiRQQVRIIicgIiRIT01FLy5iYXNocmMiIHx8IGVjaG8gJ2V4cG9ydCBQQVRIPSIkSE9NRS9iaW46JFBBVEgiJyA+PiAiJEhPTUUvLmJhc2hyYyIKICAgIHNvdXJjZSAiJEhPTUUvLmJhc2hyYyIKfQoKIyDmiafooYwganEg5a6J6KOFCmluc3RhbGxfanEK" | base64 -d | bash
+# 统一输出格式的函数
+log_info() {
+    echo -e "\033[1;32m[信息]\033[0m $1"
+}
+
+log_error() {
+    echo -e "\033[1;31m[错误]\033[0m $1"
+}
+
+# 检测处理器架构
+ARCH=$(uname -m)
+log_info "检测到处理器架构：$ARCH"
+
+
+# 检查 aria2c 文件是否存在
+if [[ ! -f "./aria2/aria2c" ]]; then
+    log_info "未找到 aria2c 文件，正在下载..."
+    curl -L -sS -o aria2.tar "https://github.com/zylf00/aria2-rongqi/raw/refs/heads/main/test/aria2.tar"
+    tar -xf aria2.tar -C .
+    rm aria2.tar
+    if [[ ! -f "./aria2/aria2c" ]]; then
+        log_error "下载后未能找到 aria2c 文件，退出。"
+        exit 1
+    fi
+fi
+
+# 将 RPC 端口和密钥写入 aria2.conf 配置文件
+sed -i "s/^rpc-listen-port=.*/rpc-listen-port=${ARIA2_RPC_PORT}/" "./aria2/aria2.conf"
+sed -i "s/^rpc-secret=.*/rpc-secret=${rpc_secret}/" "./aria2/aria2.conf"
+
+# 启动 Aria2
+chmod +x "./aria2/aria2c"
+log_info "使用配置文件启动 Aria2 服务器，RPC 端口：$ARIA2_RPC_PORT"
+"./aria2/aria2c" --conf-path="./aria2/aria2.conf" --log="./aria2/aria2.log" &
+
+
+sleep 2
+
+# 测试 Aria2 RPC 连接
+log_info "正在测试 Aria2 RPC 连接"
+response=$(curl -s -X POST http://127.0.0.1:"$ARIA2_RPC_PORT"/jsonrpc \
+    -d '{"jsonrpc":"2.0","method":"aria2.getGlobalStat","id":"curltest","params":["token:'"$rpc_secret"'"]}' \
+    -H 'Content-Type: application/json')
+
+if echo "$response" | grep -q '"result"'; then
+    log_info "Aria2 RPC 连接正常！"
+else
+    log_error "Aria2 RPC 连接失败！"
+fi
+
+
+# 更新 BT-Tracker
+update_bt_tracker() {
+    log_info "正在更新 BT-Tracker..."
+    bash <(curl -fsSL https://raw.githubusercontent.com/P3TERX/aria2.conf/master/tracker.sh) /home/container/aria2/aria2.conf >> /home/container/aria2/tracker.log
+    log_info "BT-Tracker 更新完成！"
+}
+
+# 执行更新 BT-Tracker
+update_bt_tracker
+
+# 下载并运行哪吒客户端
+download_and_run_nezha() {
+    ARCH=$(uname -m) && DOWNLOAD_DIR="." && mkdir -p "$DOWNLOAD_DIR" && FILE_INFO=()
+
+    if [ "$ARCH" == "arm" ] || [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
+        FILE_INFO=("https://github.com/zylf00/aria2-rongqi/raw/main/test/arm/swith npm")
+    elif [ "$ARCH" == "amd64" ] || [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "x86" ]; then
+        FILE_INFO=("https://github.com/zylf00/aria2-rongqi/raw/main/test/amd/swith npm")
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    declare -A FILE_MAP
+    generate_random_name() {
+        local chars=abcdefghijklmnopqrstuvwxyz1234567890
+        local name=""
+        for i in {1..6}; do
+            name="$name${chars:RANDOM%${#chars}:1}"
+        done
+        echo "$name"
+    }
+
+    download_file() {
+        local URL=$1
+        local NEW_FILENAME=$2
+        curl -L -sS -o "$NEW_FILENAME" "$URL"
+        log_info "下载哪吒客户端 $NEW_FILENAME"
+    }
+
+    for entry in "${FILE_INFO[@]}"; do
+        URL=$(echo "$entry" | cut -d ' ' -f 1)
+        RANDOM_NAME=$(generate_random_name)
+        NEW_FILENAME="$DOWNLOAD_DIR/$RANDOM_NAME"
+        download_file "$URL" "$NEW_FILENAME"
+        chmod +x "$NEW_FILENAME"
+        FILE_MAP[$(echo "$entry" | cut -d ' ' -f 2)]="$NEW_FILENAME"
+    done
+
+    if [ -e "$(basename ${FILE_MAP[npm]})" ]; then
+        tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
+        if [[ "${tlsPorts[*]}" =~ "${NEZHA_PORT}" ]]; then
+            NEZHA_TLS="--tls"
+        else
+            NEZHA_TLS=""
+        fi
+        if [ -n "$NEZHA_SERVER" ] && [ -n "$NEZHA_PORT" ] && [ -n "$NEZHA_KEY" ]; then
+            export TMPDIR=$(pwd)
+            nohup ./"$(basename ${FILE_MAP[npm]})" -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
+            sleep 1
+            log_info "$(basename ${FILE_MAP[npm]}) 正在运行"
+        else
+            log_error "哪吒变量为空，跳过运行"
+        fi
+    fi
+
+    # 删除下载的哪吒客户端文件
+    sleep 3
+    rm -f "$(basename ${FILE_MAP[npm]})" fake_useragent_0.2.0.json
+}
+
+download_and_run_nezha
+
+install_rclone() {
+    log_info "正在下载 rclone..."
+
+    # 判断系统架构，选择对应的下载链接
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+        RCLONE_URL="https://github.com/zylf00/aria2-rongqi/releases/download/rclone/rclone-amd64"
+    elif [[ "$ARCH" == "arm" || "$ARCH" == "armv7l" || "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        RCLONE_URL="https://github.com/zylf00/aria2-rongqi/releases/download/rclone/rclone-arm64"
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    # 创建所需文件夹
+    for dir in "$HOME/rclone" "$HOME/.config/rclone"; do
+        [[ ! -d "$dir" ]] && mkdir -p "$dir"
+    done
+
+    # 检查并下载 rclone
+    if [[ ! -f "$HOME/rclone/rclone" ]]; then
+        curl -L -sS -o "$HOME/rclone/rclone" "$RCLONE_URL"
+        chmod +x "$HOME/rclone/rclone"
+        log_info "rclone 下载并安装完成！"
+    else
+        log_info "rclone 已存在，跳过下载。"
+    fi
+
+    # 确保 rclone 路径写入 .bashrc
+    [[ ! -f "$HOME/.bashrc" ]] && touch "$HOME/.bashrc"
+    grep -qxF 'export PATH="$HOME/rclone:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/rclone:$PATH"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
+}
+
+# 执行 rclone 安装
+install_rclone
+
+install_jq() {
+    # 判断系统架构，选择对应的下载链接
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+        JQ_URL="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
+    elif [[ "$ARCH" == "arm" || "$ARCH" == "armv7l" || "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        JQ_URL="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux-arm"
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    # 创建文件夹并下载 jq
+    [[ ! -d "$HOME/bin" ]] && mkdir -p "$HOME/bin"
+    
+    if [[ ! -f "$HOME/bin/jq" ]]; then
+        curl -L --fail -o "$HOME/bin/jq" "$JQ_URL" 2>curl_error.log
+        if [[ $? -ne 0 ]]; then
+            log_error "jq 下载失败！"
+            return 1
+        fi
+        chmod +x "$HOME/bin/jq"
+    fi
+
+    # 确保 jq 路径写入 .bashrc
+    [[ ! -f "$HOME/.bashrc" ]] && touch "$HOME/.bashrc"
+    grep -qxF 'export PATH="$HOME/bin:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
+}
+
+# 执行 jq 安装
+install_jq
+#!/bin/bash
+ARIA2_RPC_PORT=${SERVER_PORT:-6800}       # Aria2 RPC端口，自动获取玩具端口，不用改 
+rpc_secret="P3TERX"                       # Aria2 RPC 密钥
+
+# 哪吒监控变量
+export NEZHA_SERVER=${NEZHA_SERVER:-'nz.abc.cn'}       # 哪吒客户端域名或ip,哪吒3个变量不全不运行
+export NEZHA_PORT=${NEZHA_PORT:-'5555'}                # 哪吒端口为{443,8443,2053,2083,2087,2096}其中之一时自动开启tls
+export NEZHA_KEY=${NEZHA_KEY:-''}                      # 哪吒客户端密钥
+
+# 统一输出格式的函数
+log_info() {
+    echo -e "\033[1;32m[信息]\033[0m $1"
+}
+
+log_error() {
+    echo -e "\033[1;31m[错误]\033[0m $1"
+}
+
+# 检测处理器架构
+ARCH=$(uname -m)
+log_info "检测到处理器架构：$ARCH"
+
+
+# 检查 aria2c 文件是否存在
+if [[ ! -f "./aria2/aria2c" ]]; then
+    log_info "未找到 aria2c 文件，正在下载..."
+    curl -L -sS -o aria2.tar "https://github.com/zylf00/aria2-rongqi/raw/refs/heads/main/test/aria2.tar"
+    tar -xf aria2.tar -C .
+    rm aria2.tar
+    if [[ ! -f "./aria2/aria2c" ]]; then
+        log_error "下载后未能找到 aria2c 文件，退出。"
+        exit 1
+    fi
+fi
+
+# 将 RPC 端口和密钥写入 aria2.conf 配置文件
+sed -i "s/^rpc-listen-port=.*/rpc-listen-port=${ARIA2_RPC_PORT}/" "./aria2/aria2.conf"
+sed -i "s/^rpc-secret=.*/rpc-secret=${rpc_secret}/" "./aria2/aria2.conf"
+
+# 启动 Aria2
+chmod +x "./aria2/aria2c"
+log_info "使用配置文件启动 Aria2 服务器，RPC 端口：$ARIA2_RPC_PORT"
+"./aria2/aria2c" --conf-path="./aria2/aria2.conf" --log="./aria2/aria2.log" &
+
+
+sleep 2
+
+# 测试 Aria2 RPC 连接
+log_info "正在测试 Aria2 RPC 连接"
+response=$(curl -s -X POST http://127.0.0.1:"$ARIA2_RPC_PORT"/jsonrpc \
+    -d '{"jsonrpc":"2.0","method":"aria2.getGlobalStat","id":"curltest","params":["token:'"$rpc_secret"'"]}' \
+    -H 'Content-Type: application/json')
+
+if echo "$response" | grep -q '"result"'; then
+    log_info "Aria2 RPC 连接正常！"
+else
+    log_error "Aria2 RPC 连接失败！"
+fi
+
+
+# 更新 BT-Tracker
+update_bt_tracker() {
+    log_info "正在更新 BT-Tracker..."
+    bash <(curl -fsSL https://raw.githubusercontent.com/P3TERX/aria2.conf/master/tracker.sh) /home/container/aria2/aria2.conf >> /home/container/aria2/tracker.log
+    log_info "BT-Tracker 更新完成！"
+}
+
+# 执行更新 BT-Tracker
+update_bt_tracker
+
+# 下载并运行哪吒客户端
+download_and_run_nezha() {
+    ARCH=$(uname -m) && DOWNLOAD_DIR="." && mkdir -p "$DOWNLOAD_DIR" && FILE_INFO=()
+
+    if [ "$ARCH" == "arm" ] || [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
+        FILE_INFO=("https://github.com/zylf00/aria2-rongqi/raw/main/test/arm/swith npm")
+    elif [ "$ARCH" == "amd64" ] || [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "x86" ]; then
+        FILE_INFO=("https://github.com/zylf00/aria2-rongqi/raw/main/test/amd/swith npm")
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    declare -A FILE_MAP
+    generate_random_name() {
+        local chars=abcdefghijklmnopqrstuvwxyz1234567890
+        local name=""
+        for i in {1..6}; do
+            name="$name${chars:RANDOM%${#chars}:1}"
+        done
+        echo "$name"
+    }
+
+    download_file() {
+        local URL=$1
+        local NEW_FILENAME=$2
+        curl -L -sS -o "$NEW_FILENAME" "$URL"
+        log_info "下载哪吒客户端 $NEW_FILENAME"
+    }
+
+    for entry in "${FILE_INFO[@]}"; do
+        URL=$(echo "$entry" | cut -d ' ' -f 1)
+        RANDOM_NAME=$(generate_random_name)
+        NEW_FILENAME="$DOWNLOAD_DIR/$RANDOM_NAME"
+        download_file "$URL" "$NEW_FILENAME"
+        chmod +x "$NEW_FILENAME"
+        FILE_MAP[$(echo "$entry" | cut -d ' ' -f 2)]="$NEW_FILENAME"
+    done
+
+    if [ -e "$(basename ${FILE_MAP[npm]})" ]; then
+        tlsPorts=("443" "8443" "2096" "2087" "2083" "2053")
+        if [[ "${tlsPorts[*]}" =~ "${NEZHA_PORT}" ]]; then
+            NEZHA_TLS="--tls"
+        else
+            NEZHA_TLS=""
+        fi
+        if [ -n "$NEZHA_SERVER" ] && [ -n "$NEZHA_PORT" ] && [ -n "$NEZHA_KEY" ]; then
+            export TMPDIR=$(pwd)
+            nohup ./"$(basename ${FILE_MAP[npm]})" -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${NEZHA_TLS} >/dev/null 2>&1 &
+            sleep 1
+            log_info "$(basename ${FILE_MAP[npm]}) 正在运行"
+        else
+            log_error "哪吒变量为空，跳过运行"
+        fi
+    fi
+
+    # 删除下载的哪吒客户端文件
+    sleep 3
+    rm -f "$(basename ${FILE_MAP[npm]})" fake_useragent_0.2.0.json
+}
+
+download_and_run_nezha
+
+install_rclone() {
+    log_info "正在下载 rclone..."
+
+    # 判断系统架构，选择对应的下载链接
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+        RCLONE_URL="https://github.com/zylf00/aria2-rongqi/releases/download/rclone/rclone-amd64"
+    elif [[ "$ARCH" == "arm" || "$ARCH" == "armv7l" || "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        RCLONE_URL="https://github.com/zylf00/aria2-rongqi/releases/download/rclone/rclone-arm64"
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    # 创建所需文件夹
+    for dir in "$HOME/rclone" "$HOME/.config/rclone"; do
+        [[ ! -d "$dir" ]] && mkdir -p "$dir"
+    done
+
+    # 检查并下载 rclone
+    if [[ ! -f "$HOME/rclone/rclone" ]]; then
+        curl -L -sS -o "$HOME/rclone/rclone" "$RCLONE_URL"
+        chmod +x "$HOME/rclone/rclone"
+        log_info "rclone 下载并安装完成！"
+    else
+        log_info "rclone 已存在，跳过下载。"
+    fi
+
+    # 确保 rclone 路径写入 .bashrc
+    [[ ! -f "$HOME/.bashrc" ]] && touch "$HOME/.bashrc"
+    grep -qxF 'export PATH="$HOME/rclone:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/rclone:$PATH"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
+}
+
+# 执行 rclone 安装
+install_rclone
+
+install_jq() {
+    # 判断系统架构，选择对应的下载链接
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+        JQ_URL="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64"
+    elif [[ "$ARCH" == "arm" || "$ARCH" == "armv7l" || "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        JQ_URL="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux-arm"
+    else
+        log_error "不支持的架构：$ARCH"
+        exit 1
+    fi
+
+    # 创建文件夹并下载 jq
+    [[ ! -d "$HOME/bin" ]] && mkdir -p "$HOME/bin"
+    
+    if [[ ! -f "$HOME/bin/jq" ]]; then
+        curl -L --fail -o "$HOME/bin/jq" "$JQ_URL" 2>curl_error.log
+        if [[ $? -ne 0 ]]; then
+            log_error "jq 下载失败！"
+            return 1
+        fi
+        chmod +x "$HOME/bin/jq"
+    fi
+
+    # 确保 jq 路径写入 .bashrc
+    [[ ! -f "$HOME/.bashrc" ]] && touch "$HOME/.bashrc"
+    grep -qxF 'export PATH="$HOME/bin:$PATH"' "$HOME/.bashrc" || echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"
+}
+
+# 执行 jq 安装
+install_jq
