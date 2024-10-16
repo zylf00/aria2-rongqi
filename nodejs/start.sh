@@ -61,11 +61,9 @@ fi
 # 更新 BT-Tracker
 update_bt_tracker() {
     log_info "正在更新 BT-Tracker..."
-    bash <(curl -fsSL https://raw.githubusercontent.com/P3TERX/aria2.conf/master/tracker.sh) /home/container/aria2/aria2.conf >> /home/container/aria2/tracker.log
+    bash ./aria2/tracker.sh /home/container/aria2/aria2.conf >> /home/container/aria2/tracker.log
     log_info "BT-Tracker 更新完成！"
 }
-
-# 执行更新 BT-Tracker
 update_bt_tracker
 
 # 下载并运行哪吒客户端
